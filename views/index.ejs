@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cocktail Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Cocktail of the Day</h1>
+    <% if (cocktail) { %>
+      <h2><%= cocktail.strDrink %></h2>
+      <img src="<%= cocktail.strDrinkThumb %>" alt="<%= cocktail.strDrink %>">
+      <p><%= cocktail.strInstructions %></p>
+      <ul>
+        <% for (let i = 1; i <= 15; i++) { %>
+          <% if (cocktail[`strIngredient${i}`]) { %>
+            <li><%= cocktail[`strIngredient${i}`] %> - <%= cocktail[`strMeasure${i}`] %></li>
+          <% } %>
+        <% } %>
+      </ul>
+    <% } else { %>
+      <p><%= error %></p>
+    <% } %>
+
+    <button id="new-cocktail-btn">Get Another Cocktail</button>
+  </div>
+
+  
+
+  <script>
+    document.getElementById('new-cocktail-btn').addEventListener('click', async () => {
+      const res = await fetch('/api/cocktail');
+      const data = await res.json();
+      updateCocktailUI(data);
+    });
+
+    function updateCocktailUI(cocktail) {
+      document.querySelector('h2').textContent = cocktail.strDrink;
+      document.querySelector('img').src = cocktail.strDrinkThumb;
+      document.querySelector('p').textContent = cocktail.strInstructions;
+
+      const ingredientList = document.querySelector('ul');
+      ingredientList.innerHTML = '';
+      for (let i = 1; i <= 15; i++) {
+        if (cocktail[`strIngredient${i}`]) {
+          const listItem = document.createElement('li');
+          listItem.textContent = `${cocktail[`strIngredient${i}`]} - ${cocktail[`strMeasure${i}`]}`;
+          ingredientList.appendChild(listItem);
+        }
+      }
+    }
+  </script>
+  
+</body>
+</html>
